@@ -1,15 +1,5 @@
-﻿using BaseDataL.Models;
-using BaseDataL.Seguridad;
-using BaseDataL.UnitOfWork;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text.RegularExpressions;
+﻿using BaseDataL.Seguridad;
 using System.Web.Http;
-using System.Web.UI.WebControls;
 
 namespace Sigm_App.Controllers
 {
