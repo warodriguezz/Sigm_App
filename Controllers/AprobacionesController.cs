@@ -40,16 +40,14 @@ namespace Sigm_App.Controllers
         [HttpGet, HttpPost]
         public IHttpActionResult GetListOsAll(OrdenServicio orden)
         {
-            return Ok(_unit.OrdenServicio.GetLista(orden));
+            string login = _userCredentialsService.Login;
+            return Ok(_unit.OrdenServicio.GetLista(login,orden));
         }
 
         [Route("aprobaros")]
         [HttpPost]
         public IHttpActionResult AprobacionOs(OrdenServicio orden)
         {
-            // Lógica adicional para validar los datos recibidos, si es necesario
-
-
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (!_unit.OrdenServicio.Aprobacion(orden,"A")) return BadRequest("No se pudo realizar apobación");
             return Ok(new
