@@ -73,8 +73,13 @@ namespace Sigm_App.App_Start
                 using (PrincipalContext adcontext = new PrincipalContext(ContextType.Domain, "CMBSAA"))
                 {
 
-                    byte[] key = Encoding.UTF8.GetBytes("2B7E151628AED2A6"); // 16 bytes (128 bits)
-                    byte[] iv = Encoding.UTF8.GetBytes("1B7E151628AED2A6"); // 16 bytes (128 bits)
+                    //byte[] key = Encoding.UTF8.GetBytes("2B7E151628AED2A6"); // 16 bytes (128 bits)
+                    //byte[] iv = Encoding.UTF8.GetBytes("1B7E151628AED2A6"); // 16 bytes (128 bits)
+
+                    byte[] key;
+                    byte[] iv;
+
+                    ProcesaLogin.GetAesValues(out iv, out key);
 
                     string pasword=Cryptography.DecryptString(context.Password, key, iv);
 
