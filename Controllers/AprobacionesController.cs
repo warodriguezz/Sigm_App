@@ -33,15 +33,15 @@ namespace Sigm_App.Controllers
         public IHttpActionResult GetListOsPend()
         {
             string login = _userCredentialsService.Login;
-            return Ok(_unit.OrdenServicio.GetListaPendientes(login));
+            return Ok(_unit.OrdenServicio.GetListaOrden(login,'P'));
         }
 
-        [Route("listaos")]
-        [HttpGet, HttpPost]
-        public IHttpActionResult GetListOsAll(OrdenServicio orden)
+        [Route("listaosapro")]
+        [HttpGet]
+        public IHttpActionResult GetListOsAprob()
         {
             string login = _userCredentialsService.Login;
-            return Ok(_unit.OrdenServicio.GetLista(login,orden));
+            return Ok(_unit.OrdenServicio.GetListaOrden(login, 'A'));
         }
 
         [Route("aprobaros")]
@@ -49,7 +49,10 @@ namespace Sigm_App.Controllers
         public IHttpActionResult AprobacionOs(OrdenServicio orden)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (!_unit.OrdenServicio.Aprobacion(orden,"A")) return BadRequest("No se pudo realizar apobación");
+            string login = _userCredentialsService.Login;
+            if (!_unit.OrdenServicio.Ejecutar_WorkFlow_Accion(orden, login, 'A', "MOVIL", "0")) 
+                return BadRequest("No se pudo realizar apobación");
+
             return Ok(new
             {
                 Message = "Aprobación exitosa"
@@ -65,7 +68,10 @@ namespace Sigm_App.Controllers
         
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (!_unit.OrdenServicio.Aprobacion(orden, "D")) return BadRequest("No se pudo realizar desapobación");
+            string login = _userCredentialsService.Login;
+            if (!_unit.OrdenServicio.Ejecutar_WorkFlow_Accion(orden, login, 'G', "MOVIL", "0"))
+                return BadRequest("No se pudo realizar apobación");
+
             return Ok(new
             {
                 Message = "Desaprobación exitosa"
@@ -76,11 +82,19 @@ namespace Sigm_App.Controllers
 
         [Route("listaconpend")]
         [HttpGet]
-        public IHttpActionResult GetListCons()
+        public IHttpActionResult GetListConsPend()
         {
-            return Ok(_unit.Consolidado.GetListaPendientes());
+            string login = _userCredentialsService.Login;
+            return Ok(_unit.Consolidado.GetListaConsolidado(login, 'P'));
         }
 
+        [Route("listaconapro")]
+        [HttpGet]
+        public IHttpActionResult GetListConsApro()
+        {
+            string login = _userCredentialsService.Login;
+            return Ok(_unit.Consolidado.GetListaConsolidado(login, 'A'));
+        }
 
         [Route("vercons")]
         [HttpGet, HttpPost]
@@ -96,17 +110,34 @@ namespace Sigm_App.Controllers
         [HttpPost]
         public IHttpActionResult AprobacionCons(Consolidado consolidado)
         {
-            // Lógica adicional para validar los datos recibidos, si es necesario
-
-
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (!_unit.Consolidado.Aprobacion(consolidado)) return BadRequest("No se pudo realizar apobación");
+            string login = _userCredentialsService.Login;
+            if (!_unit.Consolidado.Ejecutar_WorkFlow_Accion(consolidado, login, 'A', "MOVIL", "0"))
+                return BadRequest("No se pudo realizar apobación");
+
             return Ok(new
             {
                 Message = "Aprobación exitosa"
             });
 
         }
+
+        [Route("desaprobarcons")]
+        [HttpPost]
+        public IHttpActionResult DesaaprobacionCons(Consolidado consolidado)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            string login = _userCredentialsService.Login;
+            if (!_unit.Consolidado.Ejecutar_WorkFlow_Accion(consolidado, login, 'G', "MOVIL", "0"))
+                return BadRequest("No se pudo realizar apobación");
+
+            return Ok(new
+            {
+                Message = "Aprobación exitosa"
+            });
+
+        }
+
     }
 }
  

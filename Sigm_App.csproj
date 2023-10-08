@@ -43,6 +43,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Base">
+      <HintPath>..\Base\bin\Debug\Base.dll</HintPath>
+    </Reference>
     <Reference Include="BaseDataL.Models">
       <HintPath>..\BaseDataL\BaseDataL.Models\bin\Debug\BaseDataL.Models.dll</HintPath>
     </Reference>
@@ -204,7 +207,7 @@
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\PackageZip.pubxml" />
     <None Include="Properties\PublishProfiles\Publish.pubxml" />
-    <None Include="Properties\PublishProfiles\WebDeployDesarrollo.pubxml" />
+    <None Include="Properties\PublishProfiles\Web Des-SrvAppeon.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
