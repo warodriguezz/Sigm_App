@@ -133,7 +133,7 @@ namespace Sigm_App.Controllers
 
             return Ok(new
             {
-                Message = "Aprobación exitosa"
+                Message = "Desaprobación exitosa"
             });
 
         }

@@ -190,6 +190,7 @@
   <ItemGroup>
     <Content Include="Buenaventura.png" />
     <Content Include="Index.html" />
+    <Content Include="Version.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
