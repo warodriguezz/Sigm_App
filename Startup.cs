@@ -11,18 +11,14 @@ namespace Sigm_App
 {
     public partial class Startup
     {
-        public static string AppVersion { get; private set; }
         public void Configuration(IAppBuilder app)
         {
-            AppVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
             // Para obtener más información sobre cómo configurar la aplicación, visite https://go.microsoft.com/fwlink/?LinkID=316888
             var config = new HttpConfiguration();
             app.UseCors(CorsOptions.AllowAll);
             DIConfig.ConfigureInjector(config);
             TokenConfig.ConfigureOAuth(app, config);
-            app.UseCors(CorsOptions.AllowAll);
-            RouteConfig.Register(config);
+             RouteConfig.Register(config);
             app.UseWebApi(config);
           
         }

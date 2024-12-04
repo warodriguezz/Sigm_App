@@ -1,24 +1,29 @@
 ﻿using BaseDataL.Models;
+using BaseDataL.Models.Lims;
+using BaseDataL.Models.Planta;
 using BaseDataL.Seguridad;
 using BaseDataL.UnitOfWork;
+using System;
 using System.Configuration;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Web.Http;
+using System.Web.Http.Results;
 
 namespace Sigm_App.Controllers
 {
-    
+
     [RoutePrefix("api")]
     public class AprobacionesController : BaseController
     {
 
-     
-        public AprobacionesController(IUnitOfWork unit, UserCredentialsService userCredentials) : base(unit,userCredentials)
+
+        public AprobacionesController(IUnitOfWork unit, UserCredentialsService userCredentials) : base(unit, userCredentials)
         {
             string login = _userCredentialsService.Login;
             string clave = _userCredentialsService.Clave;
 
-            string CadenaConexion = ConfigurationManager.ConnectionStrings["BdOperaciones"].ToString();          
+            string CadenaConexion = ConfigurationManager.ConnectionStrings["BdOperaciones"].ToString();
             string patronUserID = @"User\s+ID=[^;]+";
             string patronPassword = @"Password=[^;]+";
 
@@ -27,13 +32,15 @@ namespace Sigm_App.Controllers
             _unit.CambiarCadenaConexion(nuevaCadenaConexion);
         }
 
+        //**********************************************************ORDEN DE SERVICIO *****************************************
 
         [Route("listaospend")]
         [HttpGet]
         public IHttpActionResult GetListOsPend()
         {
             string login = _userCredentialsService.Login;
-            return Ok(_unit.OrdenServicio.GetListaOrden(login,'P'));
+            return Ok(_unit.OrdenServicio.GetListaOrden(login, 'P'));
+
         }
 
         [Route("listaosapro")]
@@ -50,13 +57,42 @@ namespace Sigm_App.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             string login = _userCredentialsService.Login;
-            if (!_unit.OrdenServicio.Ejecutar_WorkFlow_Accion(orden, login, 'A', "MOVIL", "0")) 
-                return BadRequest("No se pudo realizar apobación");
 
-            return Ok(new
+            var resultado = _unit.OrdenServicio.Ejecutar_WorkFlow_Accion(orden, "sigm_os", login, 'A', "MOVIL", "0");
+
+            if (resultado.Exitoso)
             {
-                Message = "Aprobación exitosa"
-            });
+                // return Json(new { success = true, message = resultado.Mensaje });
+
+                return Ok(new
+                {
+                    Message = resultado.Mensaje
+                });
+            }
+            else
+            {
+                //return Json(new { success = false, message = resultado.Mensaje });
+                //return BadRequest("No se pudo realizar apobación");
+                //return BadRequest(new
+                //{
+                //    Message = resultado.Mensaje
+                //});
+
+
+                string mensajeError = "No se pudo realizar apobación de Orden : " + resultado.Mensaje;
+                return BadRequest(mensajeError);
+
+                //return BadRequest("No se pudo realizar apobación");
+
+
+            }
+            //if (!_unit.OrdenServicio.Ejecutar_WorkFlow_Accion(orden, "sigm_os", login, 'A', "MOVIL", "0")) 
+            //    return BadRequest("No se pudo realizar apobación");
+
+            //return Ok(new
+            //{
+            //    Message = "Aprobación exitosa"
+            //});
 
 
         }
@@ -65,18 +101,29 @@ namespace Sigm_App.Controllers
         [HttpPost]
         public IHttpActionResult DesaprobacionOs(OrdenServicio orden)
         {
-        
+
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
             string login = _userCredentialsService.Login;
-            if (!_unit.OrdenServicio.Ejecutar_WorkFlow_Accion(orden, login, 'G', "MOVIL", "0"))
-                return BadRequest("No se pudo realizar apobación");
 
-            return Ok(new
+            var resultado = _unit.OrdenServicio.Ejecutar_WorkFlow_Accion(orden, "sigm_os", login, 'G', "MOVIL", "0");
+
+
+            //if (!_unit.OrdenServicio.Ejecutar_WorkFlow_Accion(orden, "sigm_os" ,login, 'G', "MOVIL", "0"))
+            //    return BadRequest("No se pudo realizar apobación");
+
+            if (resultado.Exitoso)
             {
-                Message = "Desaprobación exitosa"
-            });
-
+                return Ok(new
+                {
+                    Message = resultado.Mensaje
+                });
+            }
+            else
+            {
+                string mensajeError = "No se pudo realizar desapobación de orden: " + resultado.Mensaje;
+                return BadRequest(mensajeError);
+            }
 
         }
 
@@ -112,14 +159,20 @@ namespace Sigm_App.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             string login = _userCredentialsService.Login;
-            if (!_unit.Consolidado.Ejecutar_WorkFlow_Accion(consolidado, login, 'A', "MOVIL", "0"))
-                return BadRequest("No se pudo realizar apobación");
+            var resultado = _unit.Consolidado.Ejecutar_WorkFlow_Accion(consolidado, "sigm_os", login, 'A', "MOVIL", "0");
 
-            return Ok(new
+            if (resultado.Exitoso)
             {
-                Message = "Aprobación exitosa"
-            });
-
+                return Ok(new
+                {
+                    Message = resultado.Mensaje
+                });
+            }
+            else
+            {
+                string mensajeError = "No se pudo realizar apobación de consolidado: " + resultado.Mensaje;
+                return BadRequest(mensajeError);
+            }
         }
 
         [Route("desaprobarcons")]
@@ -128,16 +181,120 @@ namespace Sigm_App.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             string login = _userCredentialsService.Login;
-            if (!_unit.Consolidado.Ejecutar_WorkFlow_Accion(consolidado, login, 'G', "MOVIL", "0"))
-                return BadRequest("No se pudo realizar apobación");
 
-            return Ok(new
+            var resultado = _unit.Consolidado.Ejecutar_WorkFlow_Accion(consolidado, "sigm_os", login, 'G', "MOVIL", "0");
+
+            if (resultado.Exitoso)
             {
-                Message = "Desaprobación exitosa"
-            });
+                return Ok(new
+                {
+                    Message = resultado.Mensaje
+                });
+            }
+            else
+            {
+                string mensajeError = "No se pudo realizar desapobación de consolidado: " + resultado.Mensaje;
+                return BadRequest(mensajeError);
+            }
 
         }
 
+
+        //**********************************************************LIMS*****************************************
+
+
+        [Route("listsolcambiopend")]
+        [HttpGet]
+        public IHttpActionResult GetListaSolCambioPend()
+        {
+            string login = _userCredentialsService.Login;
+            return Ok(_unit.SolicitudCambio.GetListaSolicitudAprobacion(login));
+        }
+
+        [Route("aprobarsolcambio")]
+        [HttpPost]
+        public IHttpActionResult AprobacionSolCambio(SolicitudCambio solcambio)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            string login = _userCredentialsService.Login;
+            var resultado = _unit.SolicitudCambio.Ejecutar_WorkFlow_Accion(solcambio, "sigm_lims", login, 'A', "MOVIL", "NO");
+
+            if (resultado.Exitoso)
+            {
+                return Ok(new
+                {
+                    Message = resultado.Mensaje
+                });
+            }
+            else
+            {
+                string mensajeError = "No se pudo realizar apobación de la solicitud de cambio: " + resultado.Mensaje;
+                return BadRequest(mensajeError);
+            }
+        }
+
+
+        //**********************************************************PLANTA*****************************************
+
+        [Route("listpartediariopend")]
+        [HttpGet]
+        public IHttpActionResult GetListaParteDiario()
+        {
+            string login = _userCredentialsService.Login;
+            return Ok(_unit.ModeloParte.GetListaParteAprobacion(login, "Parte Diario"));
+        }
+
+        [Route("listpartemensualpend")]
+        [HttpGet]
+        public IHttpActionResult GetListaParteMensual()
+        {
+            string login = _userCredentialsService.Login;
+            return Ok(_unit.ModeloParte.GetListaParteAprobacion(login, "Parte Mensual"));
+        }
+
+        [Route("aprobarparte")]
+        [HttpPost]
+        public IHttpActionResult AprobacionModeloParte(ParteMetalurgico parte)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            string login = _userCredentialsService.Login;
+            var resultado = _unit.ModeloParte.Ejecutar_WorkFlow_Accion(parte, "sigm_planta", login, Convert.ToChar(parte.EstadoDespuesAprobado), "MOVIL", "");
+
+            if (resultado.Exitoso)
+            {
+                return Ok(new
+                {
+                    Message = resultado.Mensaje
+                });
+            }
+            else
+            {
+                string mensajeError = "No se pudo realizar apobación del parte " + resultado.Mensaje;
+                return BadRequest(mensajeError);
+            }
+        }
+
+        [Route("rechazarparte")]
+        [HttpPost]
+        public IHttpActionResult RechazarModeloParte(ParteMetalurgico parte)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            string login = _userCredentialsService.Login;
+            var resultado = _unit.ModeloParte.Ejecutar_WorkFlow_Accion(parte, "sigm_planta", login, 'V', "MOVIL", "");
+
+            if (resultado.Exitoso)
+            {
+                return Ok(new
+                {
+                    Message = resultado.Mensaje
+                });
+            }
+            else
+            {
+                string mensajeError = "No se pudo realizar la operación " + resultado.Mensaje;
+                return BadRequest(mensajeError);
+            }
+        }
     }
 }
  
