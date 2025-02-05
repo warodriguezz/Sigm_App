@@ -1,4 +1,5 @@
-﻿using BaseDataL.Seguridad;
+﻿using Base;
+using BaseDataL.Seguridad;
 using BaseDataL.UnitOfWork;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
@@ -6,11 +7,15 @@ using Owin;
 using System;
 using System.Configuration;
 using System.DirectoryServices.AccountManagement;
+using System.Net.NetworkInformation;
+using System.Numerics;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
+using System.Web.UI.WebControls;
 
 namespace Sigm_App.App_Start
 {
@@ -52,13 +57,14 @@ namespace Sigm_App.App_Start
     {
         private readonly IUnitOfWork _unit;
 
-        
-
-        
-
         public CustomAuthorizationServerProvider(IUnitOfWork unit)
         {
             _unit = unit;
+            string ConnectionString = ConfigurationManager.ConnectionStrings["BvnSeguridadUS"].ToString();
+            string clave = ConfigurationManager.AppSettings["Servicio"];
+            clave = ProcesaLogin.Proteger(clave, 1);
+            string nuevacadena = Funciones.ReemplazarConectionString_UsuarioPassword(ConnectionString, "usr_seguridad", clave);
+            _unit.CambiarCadenaConexion(nuevacadena);
         }
 
         public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
@@ -73,10 +79,15 @@ namespace Sigm_App.App_Start
                 using (PrincipalContext adcontext = new PrincipalContext(ContextType.Domain, "CMBSAA"))
                 {
 
-                    byte[] key = Encoding.UTF8.GetBytes("2B7E151628AED2A6"); // 16 bytes (128 bits)
-                    byte[] iv = Encoding.UTF8.GetBytes("1B7E151628AED2A6"); // 16 bytes (128 bits)
+                    //byte[] key = Encoding.UTF8.GetBytes("2B7E151628AED2A6"); // 16 bytes (128 bits)
+                    //byte[] iv = Encoding.UTF8.GetBytes("1B7E151628AED2A6"); // 16 bytes (128 bits)
 
-                    string pasword=Cryptography.DecryptString(context.Password, key, iv);
+                    byte[] key;
+                    byte[] iv;
+
+                    ProcesaLogin.GetAesValues(out iv, out key);
+
+                    string pasword=Cryptography.DecryptString(context.Password.Trim(), key, iv);
 
                     // Validar las credenciales del usuario contra el servidor de Active Directory
                     bool isValid = adcontext.ValidateCredentials(context.UserName, pasword);

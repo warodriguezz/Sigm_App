@@ -23,6 +23,23 @@ namespace Sigm_App.Controllers
             _userCredentialsService = userCredentialsService;
         }
 
+        [Route("GetAesValores")]
+        [HttpGet]
+        public IHttpActionResult GetAesValores()
+        {
+            byte[] key;
+            byte[] iv;
+            ProcesaLogin.GetAesValues(out iv, out key);
+            var aesValues = new
+            {
+                IV = iv,
+                Key = key
+            };
+            return Json(aesValues);
+        }
+
+
+
         [Authorize]
         [Route("InfoUsuario")]
         [HttpGet]
@@ -50,19 +67,23 @@ namespace Sigm_App.Controllers
             return BadRequest("No se pudo Obtener información de Autorizacion");
         }
 
-        //[Route("ClaveUsuario")]
-        //[HttpPost]
-        //public IHttpActionResult Encriptar(User acceso)
-        //{
-        //    byte[] key = Encoding.UTF8.GetBytes("2B7E151628AED2A6"); // 16 bytes (128 bits)
-        //    byte[] iv = Encoding.UTF8.GetBytes("1B7E151628AED2A6"); // 16 bytes (128 bits)
+        [Route("ClaveUsuario")]
+        [HttpPost]
+        public IHttpActionResult Encriptar(User acceso)
+        {
+            //byte[] key = Encoding.UTF8.GetBytes("2B7E151628AED2A6"); // 16 bytes (128 bits)
+            //byte[] iv = Encoding.UTF8.GetBytes("1B7E151628AED2A6"); // 16 bytes (128 bits)
+            byte[] key;
+            byte[] iv;
 
-        //    string passwordacceso = acceso.Password;
-        //    string password;
+            ProcesaLogin.GetAesValues(out iv, out key);
 
-        //    password = EncryptString(passwordacceso, key, iv);
-        //    return Ok(password);
-        //}
+            string passwordacceso = acceso.Password;
+            string password;
+
+            password = Cryptography.EncryptString(passwordacceso, key, iv);
+            return Ok(password);
+        }
 
         //[Route("ValidarUsuario")]
         //[HttpPost]

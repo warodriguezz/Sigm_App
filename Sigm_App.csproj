@@ -43,6 +43,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Base">
+      <HintPath>..\Base\bin\Debug\Base.dll</HintPath>
+    </Reference>
     <Reference Include="BaseDataL.Models">
       <HintPath>..\BaseDataL\BaseDataL.Models\bin\Debug\BaseDataL.Models.dll</HintPath>
     </Reference>
@@ -187,6 +190,7 @@
   <ItemGroup>
     <Content Include="Buenaventura.png" />
     <Content Include="Index.html" />
+    <Content Include="Version.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\Publish.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -3,6 +3,7 @@ using Owin;
 using Sigm_App.App_Start;
 using System.Web.Http;
 using Microsoft.Owin.Cors;
+using System.Reflection;
 
 [assembly: OwinStartup(typeof(Sigm_App.Startup))]
 
@@ -17,10 +18,9 @@ namespace Sigm_App
             app.UseCors(CorsOptions.AllowAll);
             DIConfig.ConfigureInjector(config);
             TokenConfig.ConfigureOAuth(app, config);
-            app.UseCors(CorsOptions.AllowAll);
-            RouteConfig.Register(config);
+             RouteConfig.Register(config);
             app.UseWebApi(config);
-
+          
         }
     }
 }

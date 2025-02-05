@@ -34,7 +34,8 @@
 
 <body>
     <div class="header">
-        <h1>Sigm Web Api</h1>
+        <h1>SigmWeb Api</h1>
+        <p>Versión del servicio: <span id="version"></span></p>
     </div>
 
     <div class="content">
@@ -45,6 +46,16 @@
     <div class="content">
         <img src="Buenaventura.png" />
     </div>
-    
+
+    <script>
+        // Cargar la versión desde el archivo Version.txt
+        fetch('Version.txt')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('version').textContent = data;
+            })
+            .catch(error => console.error('Error al cargar la versión:', error));
+    </script>
+
 </body>
 </html>
